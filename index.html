@@ -308,7 +308,6 @@
         
         .event:hover {
             transform: translateX(3px);
-            filter: brightness(0.9);
         }
         
         .event-time {
@@ -333,7 +332,6 @@
         
         .event.no-event:hover {
             transform: translateX(3px);
-            filter: brightness(0.9);
             background-color: #f0f0f0;
         }
         
@@ -589,10 +587,11 @@
             const firstDay = new Date(year, month - 1, 1).getDay();
             const daysInMonth = new Date(year, month, 0).getDate();
 
+            // 建立空白格子，但設定為與其他日期格相同顏色
             for (let i = 0; i < firstDay; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'day-cell';
-                empty.style.background = 'transparent';
+                // 不再設置 transparent 背景
                 grid.appendChild(empty);
             }
 
