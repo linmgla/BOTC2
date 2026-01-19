@@ -1295,9 +1295,10 @@
             return data;
         }
         
-        // 轉換 CSV 數據為應用格式（含數據驗證）
+        // 轉換 CSV 數據為應用格式（含數據驗證） - 修復：使用固定年份2026
         function convertCSVData(csvData) {
-            const currentYear = new Date().getFullYear();
+            // 固定使用2026年，因為行事曆顯示的是2026年1月
+            const calendarYear = 2026;
             const validData = [];
             
             csvData.forEach(row => {
@@ -1311,7 +1312,7 @@
                     const month = dateParts[0].padStart(2, '0');
                     const day = dateParts[1].padStart(2, '0');
                     
-                    const dateStr = `${currentYear}-${month}-${day}`;
+                    const dateStr = `${calendarYear}-${month}-${day}`;
                     const dateObj = new Date(dateStr);
                     if (isNaN(dateObj.getTime())) {
                         console.warn('跳過無效日期:', dateStr);
@@ -1913,7 +1914,7 @@
             return eventData.filter(event => event.date === date);
         }
         
-        // 創建月曆數據
+        // 創建月曆數據 - 修正：確保生成完整1月日曆
         function createCalendarData(month, year) {
             const daysInMonth = new Date(year, month, 0).getDate();
             const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
@@ -1921,6 +1922,7 @@
             const calendarData = [];
             const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
             
+            // 添加1月1日之前的空白格子
             for (let i = 0; i < firstDayOfMonth; i++) {
                 calendarData.push({
                     date: '',
@@ -1931,6 +1933,7 @@
                 });
             }
             
+            // 添加1月1日到1月31日的所有日期
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month - 1, day);
                 calendarData.push({
@@ -1939,6 +1942,18 @@
                     weekday: weekdays[date.getDay()],
                     fullDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
                     isEmpty: false
+                });
+            }
+            
+            // 確保總共42個格子（6行×7列）以保持完整的網格佈局
+            const totalCells = 42; // 6行×7列
+            while (calendarData.length < totalCells) {
+                calendarData.push({
+                    date: '',
+                    month: month,
+                    weekday: '',
+                    fullDate: '',
+                    isEmpty: true
                 });
             }
             
