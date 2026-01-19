@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>血染鐘樓活動行事曆 by 曉風</title>
     <style>
-        /* 所有之前的 CSS 樣式保持不變 */
+        /* 所有之前的 CSS 樣式保持不變，添加列表模式樣式 */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -24,6 +24,60 @@
         body.dark-theme {
             color: #e9ecef;
             background-color: #121212;
+        }
+        
+        /* 新增：列表模式樣式 */
+        body.view-list .calendar-grid {
+            display: block;
+            min-width: 0;
+        }
+        
+        body.view-list .weekday-header {
+            display: none;
+        }
+        
+        body.view-list .day-cell {
+            display: none;
+            min-height: auto;
+            border-bottom: 1px solid #eee;
+            padding: 15px;
+            width: 100%;
+        }
+        
+        .dark-theme.view-list .day-cell {
+            border-color: #333;
+        }
+        
+        body.view-list .day-cell.has-events {
+            display: block;
+        }
+        
+        body.view-list .day-number {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        body.view-list .today .day-number {
+            color: #d93025;
+        }
+        
+        body.view-list .event {
+            font-size: 14px;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        
+        body.view-list .event-time {
+            font-size: 13px;
+            min-width: 45px;
+        }
+        
+        body.view-list .no-events-message {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2rem;
         }
         
         .container {
@@ -106,7 +160,8 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         
-        .theme-toggle {
+        /* 修改：添加視圖切換按鈕樣式 */
+        .theme-toggle, .refresh-btn, .view-toggle {
             position: relative;
             padding: 10px 15px;
             background: rgba(255, 255, 255, 0.2);
@@ -120,41 +175,29 @@
             font-size: 14px;
         }
         
-        .theme-toggle:hover {
+        .theme-toggle:hover, .refresh-btn:hover, .view-toggle:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(1.05);
         }
         
+        .view-toggle.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: white;
+        }
+        
         /* 暗色主題下按鈕顏色改為與亮色主題相同 */
         .dark-theme .theme-toggle,
-        .dark-theme .refresh-btn {
+        .dark-theme .refresh-btn,
+        .dark-theme .view-toggle {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.5);
             color: white;
         }
         
         .dark-theme .theme-toggle:hover,
-        .dark-theme .refresh-btn:hover {
+        .dark-theme .refresh-btn:hover,
+        .dark-theme .view-toggle:hover {
             background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .refresh-btn {
-            position: relative;
-            padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            font-size: 14px;
-        }
-        
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
         }
         
         .refresh-btn:disabled {
@@ -811,7 +854,7 @@
                 font-size: 1.6rem;
             }
             
-            .theme-toggle, .refresh-btn {
+            .theme-toggle, .refresh-btn, .view-toggle {
                 width: auto;
                 padding: 8px 15px;
                 font-size: 13px;
@@ -892,6 +935,11 @@
             .instructions li {
                 font-size: 13px;
             }
+            
+            /* 手機端自動切換到列表模式 */
+            body.view-grid .calendar-grid {
+                min-width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
@@ -953,7 +1001,7 @@
         }
     </style>
 </head>
-<body>
+<body class="view-grid">
     <div class="container">
         <header>
             <div class="header-content">
@@ -966,6 +1014,9 @@
                 </div>
             </div>
             <div class="header-controls">
+                <!-- 新增：視圖切換按鈕 -->
+                <button class="view-toggle active" id="gridModeBtn">🖥️ 網格模式</button>
+                <button class="view-toggle" id="listModeBtn">📱 清單模式</button>
                 <button class="theme-toggle" id="themeToggle">🌙 暗色主題</button>
                 <button class="refresh-btn" id="refreshBtn">🔄 重新整理</button>
             </div>
@@ -1061,6 +1112,7 @@
         <div class="instructions">
             <h3>📝 使用說明</h3>
             <ul>
+                <li>點擊「網格模式」或「清單模式」切換視圖顯示方式</li>
                 <li>點擊上方地點按鈕可切換顯示/隱藏該地點活動</li>
                 <li>按鈕顏色變淡表示該地點活動已隱藏</li>
                 <li>滑鼠懸停在活動上可查看簡要資訊</li>
@@ -1070,7 +1122,7 @@
                 <li>點擊「重新整理」按鈕可從 Google Sheets 獲取最新數據</li>
                 <li>數據會自動緩存 5 分鐘，減少不必要的網絡請求</li>
                 <li>點擊「切換暗色主題」可切換亮色/暗色主題</li>
-                <li><strong>手機用戶：可左右滑動查看完整行事曆</strong></li>
+                <li><strong>手機用戶：清單模式更適合小螢幕瀏覽</strong></li>
             </ul>
         </div>
     </div>
@@ -1154,6 +1206,51 @@
             } else {
                 body.classList.remove('dark-theme');
                 themeToggle.textContent = '🌙 暗色主題';
+            }
+        }
+        
+        // 視圖切換功能
+        function setupViewToggle() {
+            const gridModeBtn = document.getElementById('gridModeBtn');
+            const listModeBtn = document.getElementById('listModeBtn');
+            const body = document.body;
+            
+            // 從本地存儲加載視圖設置
+            const savedView = localStorage.getItem('calendarView') || 'grid';
+            if (savedView === 'list') {
+                switchToListView();
+            } else {
+                switchToGridView();
+            }
+            
+            // 手機端自動切換到列表模式
+            if (window.innerWidth <= 768) {
+                switchToListView();
+            }
+            
+            gridModeBtn.addEventListener('click', switchToGridView);
+            listModeBtn.addEventListener('click', switchToListView);
+            
+            function switchToGridView() {
+                body.className = 'view-grid';
+                if (body.classList.contains('dark-theme')) {
+                    body.className += ' dark-theme';
+                }
+                gridModeBtn.classList.add('active');
+                listModeBtn.classList.remove('active');
+                localStorage.setItem('calendarView', 'grid');
+                generateCalendar(); // 重新生成日曆以適應網格模式
+            }
+            
+            function switchToListView() {
+                body.className = 'view-list';
+                if (body.classList.contains('dark-theme')) {
+                    body.className += ' dark-theme';
+                }
+                listModeBtn.classList.add('active');
+                gridModeBtn.classList.remove('active');
+                localStorage.setItem('calendarView', 'list');
+                generateCalendar(); // 重新生成日曆以適應列表模式
             }
         }
         
@@ -1327,15 +1424,21 @@
             const overlay = document.getElementById('loadingOverlay');
             const refreshBtn = document.getElementById('refreshBtn');
             const themeToggle = document.getElementById('themeToggle');
+            const gridModeBtn = document.getElementById('gridModeBtn');
+            const listModeBtn = document.getElementById('listModeBtn');
             
             if (show) {
                 overlay.classList.add('active');
                 refreshBtn.disabled = true;
                 themeToggle.disabled = true;
+                gridModeBtn.disabled = true;
+                listModeBtn.disabled = true;
             } else {
                 overlay.classList.remove('active');
                 refreshBtn.disabled = false;
                 themeToggle.disabled = false;
+                gridModeBtn.disabled = false;
+                listModeBtn.disabled = false;
             }
         }
         
@@ -1404,6 +1507,7 @@
         // 初始化函數
         async function init() {
             loadTheme();
+            setupViewToggle();
             
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('refreshBtn').addEventListener('click', refreshData);
@@ -1627,13 +1731,22 @@
             
             calendarGrid.innerHTML = '';
             
-            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-            weekdays.forEach(day => {
-                const weekdayCell = document.createElement('div');
-                weekdayCell.className = 'weekday-cell';
-                weekdayCell.textContent = day;
-                calendarGrid.appendChild(weekdayCell);
-            });
+            const isListView = document.body.classList.contains('view-list');
+            
+            if (!isListView) {
+                // 網格模式：顯示星期標題
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                const weekdayHeader = document.createElement('div');
+                weekdayHeader.className = 'weekday-header';
+                
+                weekdays.forEach(day => {
+                    const weekdayCell = document.createElement('div');
+                    weekdayCell.className = 'weekday-cell';
+                    weekdayCell.textContent = day;
+                    weekdayHeader.appendChild(weekdayCell);
+                });
+                calendarGrid.appendChild(weekdayHeader);
+            }
             
             const january2026 = createCalendarData(1, 2026);
             let hasVisibleEvents = false;
@@ -1641,16 +1754,51 @@
             const today = new Date();
             const todayStr = formatDateToYYYYMMDD(today);
             
-            january2026.forEach(day => {
+            // 在列表模式下，我們需要按照日期排序並只顯示有活動的日期
+            if (isListView) {
+                // 收集所有有可見活動的日期
+                const datesWithVisibleEvents = new Set();
+                
+                january2026.forEach(day => {
+                    if (day.isEmpty) return;
+                    
+                    const dayEvents = getEventsForDate(day.fullDate);
+                    const visibleDayEvents = dayEvents.filter(event => !hiddenLocations.has(event.location));
+                    
+                    if (visibleDayEvents.length > 0) {
+                        datesWithVisibleEvents.add(day.fullDate);
+                        hasVisibleEvents = true;
+                    }
+                });
+                
+                // 只創建有可見活動的日期單元格
+                january2026.forEach(day => {
+                    if (day.isEmpty || !datesWithVisibleEvents.has(day.fullDate)) return;
+                    
+                    createDayCell(day, todayStr, true);
+                });
+            } else {
+                // 網格模式：顯示所有日期，包括空白
+                january2026.forEach(day => {
+                    if (day.isEmpty) {
+                        const emptyCell = document.createElement('div');
+                        emptyCell.className = 'empty-cell';
+                        calendarGrid.appendChild(emptyCell);
+                        return;
+                    }
+                    
+                    createDayCell(day, todayStr, false);
+                });
+            }
+            
+            function createDayCell(day, todayStr, isListMode) {
                 const dayCell = document.createElement('div');
                 
-                if (day.isEmpty) {
-                    dayCell.className = 'empty-cell';
-                    calendarGrid.appendChild(dayCell);
-                    return;
+                if (isListMode) {
+                    dayCell.className = 'day-cell has-events';
+                } else {
+                    dayCell.className = 'day-cell';
                 }
-                
-                dayCell.className = 'day-cell';
                 
                 if (day.fullDate === todayStr) {
                     dayCell.classList.add('today');
@@ -1678,7 +1826,6 @@
                 // 只顯示未隱藏的事件
                 if (visibleDayEvents.length > 0) {
                     visibleDayEvents.forEach(event => {
-                        hasVisibleEvents = true;
                         hasVisibleDayEvents = true;
                         
                         const eventDiv = document.createElement('div');
@@ -1724,8 +1871,8 @@
                     });
                 }
                 
-                // 如果該天沒有任何可見事件，顯示"暫無活動"
-                if (!hasVisibleDayEvents) {
+                // 在網格模式下，如果該天沒有任何可見事件，顯示"暫無活動"
+                if (!isListMode && !hasVisibleDayEvents) {
                     const noEvent = document.createElement('div');
                     noEvent.className = 'event';
                     noEvent.textContent = "暫無活動";
@@ -1743,7 +1890,7 @@
                 }
                 
                 calendarGrid.appendChild(dayCell);
-            });
+            }
             
             // 更新無活動訊息
             if (!hasVisibleEvents && hiddenLocations.size > 0) {
@@ -1752,6 +1899,12 @@
                     '所有地點活動皆已隱藏' : '目前選擇的地點沒有活動安排';
             } else {
                 noEventsMessage.style.display = 'none';
+            }
+            
+            // 如果是列表模式且沒有活動，顯示提示訊息
+            if (isListView && !hasVisibleEvents) {
+                noEventsMessage.style.display = 'block';
+                noEventsMessage.textContent = '目前沒有活動安排';
             }
         }
         
@@ -1794,6 +1947,13 @@
         
         // 頁面加載時初始化
         document.addEventListener('DOMContentLoaded', init);
+        
+        // 窗口大小改變時，如果是手機端自動切換到列表模式
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768 && document.body.classList.contains('view-grid')) {
+                document.getElementById('listModeBtn').click();
+            }
+        });
     </script>
 </body>
 </html>
