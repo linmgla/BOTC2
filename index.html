@@ -73,10 +73,8 @@
             --no-event-text: #adb5bd;
             --tooltip-bg: #333;
             --tooltip-text: #ffffff;
-            /* 亮色主題懸停顏色變數 - 保持原樣 */
+            /* 亮色主題懸停顏色變數 - 改為與暗色主題相同 */
             --no-event-hover-bg: #e2e6ea;
-            --no-event-hover-border: #adb5bd;
-            --no-event-hover-text: #495057;
         }
 
         * {
@@ -386,21 +384,10 @@
             transition: all 0.3s ease;
         }
         
-        /* 暗色主題：無活動懸停效果 - 改為與index(14).html相同 */
-        body:not(.light-theme) .event.no-event:hover {
+        /* 無活動懸停效果 - 暗色和亮色主題都使用相同效果 */
+        .event.no-event:hover {
             transform: translateX(3px);
             background-color: var(--no-event-hover-bg);
-        }
-        
-        /* 亮色主題：無活動懸停效果 - 保持原樣 */
-        body.light-theme .event.no-event:hover {
-            transform: translateX(3px);
-            /* 整個按鈕變成統一的顏色 */
-            background-color: var(--no-event-hover-bg) !important;
-            color: var(--no-event-hover-text) !important;
-            border-left-color: var(--no-event-hover-border) !important;
-            /* 懸停時陰影加深 */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         /* 過期活動樣式 */
