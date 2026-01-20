@@ -352,6 +352,8 @@
         /* 正常活動的懸停效果 */
         .event:not(.no-event):hover {
             transform: translateX(3px);
+            /* 懸停時陰影加深 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
         }
         
         .event-time {
@@ -367,33 +369,34 @@
             text-overflow: ellipsis;
         }
         
-        /* 無活動樣式 - 改進懸停效果 */
+        /* 無活動樣式 */
         .event.no-event {
             background-color: var(--no-event-bg);
             color: var(--no-event-text);
             border-left-color: var(--border-color);
             cursor: default;
-            /* 添加懸停時的陰影效果 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* 較淺的陰影 */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
         
+        /* 無活動懸停效果 - 明顯變亮 */
         .event.no-event:hover {
-            transform: translateX(5px);
-            /* 改進懸停效果 - 根據主題變亮 */
-            background-color: var(--bg-tertiary);
-            color: var(--text-primary);
-            border-left-color: var(--border-color);
-            /* 懸停時增加陰影深度 */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            transform: translateX(3px);
+            /* 顯著變亮效果 */
+            background-color: #3a3a3a;
+            color: #ffffff;
+            border-left-color: #666;
+            /* 懸停時陰影加深 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         /* 亮色主題下的無活動懸停效果 */
         .light-theme .event.no-event:hover {
-            background-color: #dee2e6;
-            color: #343a40;
-            border-left-color: #6c757d;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background-color: #e9ecef;
+            color: #495057;
+            border-left-color: #adb5bd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         /* 過期活動樣式 */
@@ -432,19 +435,9 @@
         }
         
         .view-list .day-number {
-            font-size: 18px;
+            font-size: 16px;
             color: #4dabf7;
             margin-bottom: 10px;
-            display: block;
-            justify-content: flex-start;
-        }
-        
-        .view-list .day-number span {
-            display: inline-block;
-        }
-        
-        .view-list .date-text {
-            display: none;
         }
         
         /* 狀態欄 */
@@ -1115,15 +1108,7 @@
 
                 const num = document.createElement('div');
                 num.className = 'day-number';
-                
-                if (isListMode) {
-                    // 清單模式：日期和星期幾合併顯示
-                    num.innerHTML = `<span>${parseInt(m)}/${dayNum}(${['日','一','二','三','四','五','六'][new Date(y, parseInt(m)-1, dayNum).getDay()]})</span>`;
-                } else {
-                    // 網格模式：保持原樣
-                    num.innerHTML = `<span>${parseInt(m)}/${dayNum}</span><span class="date-text">${['日','一','二','三','四','五','六'][new Date(y, parseInt(m)-1, dayNum).getDay()]}</span>`;
-                }
-                
+                num.innerHTML = `<span>${parseInt(m)}/${dayNum}</span><span class="date-text">${['日','一','二','三','四','五','六'][new Date(y, parseInt(m)-1, dayNum).getDay()]}</span>`;
                 cell.appendChild(num);
 
                 const filtered = events.filter(e => e.date === ds && !hiddenLocs.has(e.loc) && 
