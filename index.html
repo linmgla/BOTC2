@@ -73,8 +73,8 @@
             --no-event-text: #adb5bd;
             --tooltip-bg: #333;
             --tooltip-text: #ffffff;
-            /* 亮色主題懸停顏色變數 - 改為與暗色主題相同 */
-            --no-event-hover-bg: #e2e6ea;
+            /* 亮色主題懸停顏色變數 - 改為固定顏色 #f1f3f5 */
+            --no-event-hover-bg: #f1f3f5;
         }
 
         * {
@@ -384,10 +384,16 @@
             transition: all 0.3s ease;
         }
         
-        /* 無活動懸停效果 - 暗色和亮色主題都使用相同效果 */
-        .event.no-event:hover {
+        /* 暗色主題：無活動懸停效果 */
+        body:not(.light-theme) .event.no-event:hover {
             transform: translateX(3px);
             background-color: var(--no-event-hover-bg);
+        }
+        
+        /* 亮色主題：無活動懸停效果 - 使用固定顏色 #f1f3f5 */
+        body.light-theme .event.no-event:hover {
+            transform: translateX(3px);
+            background-color: #f1f3f5 !important;
         }
         
         /* 過期活動樣式 */
