@@ -37,6 +37,10 @@
             --no-event-text: #666;
             --tooltip-bg: #2a2a2a;
             --tooltip-text: #e0e0e0;
+            /* 新增懸停顏色變數 */
+            --no-event-hover-bg: #3a3a3a;
+            --no-event-hover-border: #555;
+            --no-event-hover-text: #fff;
         }
 
         .light-theme {
@@ -71,6 +75,10 @@
             --no-event-text: #adb5bd;
             --tooltip-bg: #333;
             --tooltip-text: #ffffff;
+            /* 新增懸停顏色變數 - 亮色主題 */
+            --no-event-hover-bg: #e2e6ea;
+            --no-event-hover-border: #adb5bd;
+            --no-event-hover-text: #495057;
         }
 
         * {
@@ -380,23 +388,15 @@
             transition: all 0.3s ease;
         }
         
-        /* 無活動懸停效果 - 明顯變亮 */
+        /* 無活動懸停效果 - 整個按鈕變成同個顏色 */
         .event.no-event:hover {
             transform: translateX(3px);
-            /* 顯著變亮效果 */
-            background-color: #3a3a3a;
-            color: #ffffff;
-            border-left-color: #666;
+            /* 整個按鈕變成統一的顏色 */
+            background-color: var(--no-event-hover-bg) !important;
+            color: var(--no-event-hover-text) !important;
+            border-left-color: var(--no-event-hover-border) !important;
             /* 懸停時陰影加深 */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* 亮色主題下的無活動懸停效果 */
-        .light-theme .event.no-event:hover {
-            background-color: #e9ecef;
-            color: #495057;
-            border-left-color: #adb5bd;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         /* 過期活動樣式 */
